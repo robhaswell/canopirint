@@ -1,6 +1,6 @@
 {
   "name": "canopirint",
-  "version": "0.0.0",
+  "version": "1.0.0-0",
   "description": "cli tool to format canopi logs in a readable way",
   "main": "cli.js",
   "scripts": {
