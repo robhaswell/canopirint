@@ -20,7 +20,7 @@ const write = (chunk, enc, cb) => {
 }
 
 const format = (msg, severity, err) => {
-  msg = util.format(msg).replace(/'__ERROR_PLACEHOLDER__'/, err)
+  msg = util.inspect(msg, { depth: null }).replace(/'__ERROR_PLACEHOLDER__'/, err)
   switch (severity.toLowerCase()) {
     case 'error': return msg.split('\n').map(line => chalk.red(line)).join('\n')
     case 'warn': return msg.split('\n').map(line => chalk.yellow(line)).join('\n')
