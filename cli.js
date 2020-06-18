@@ -5,17 +5,32 @@ const LineStream = require('byline').LineStream
 const util = require('util')
 const chalk = new (require('chalk')).constructor({ enabled: true })
 
+const COMPOSE_REGEXP = /^(.*\|\u001b\[0m )({.+})$/
+
 const write = (chunk, enc, cb) => {
   try {
+    // Parse a standard JSON chunk
     const msg = JSON.parse(chunk)
     const error = extractError(msg)
     process.stdout.write(format(msg, msg.severity, error))
     process.stdout.write('\n')
     cb(null)
   } catch (e) {
-    process.stdout.write(chunk)
-    process.stdout.write('\n')
-    cb(null)
+    // Try and extrack the chunk from a docker-compose log
+    try {
+      const matches = COMPOSE_REGEXP.exec(chunk)
+      const msg = JSON.parse(matches[2])
+      const error = extractError(msg)
+
+      process.stdout.write(matches[1])
+      process.stdout.write(format(msg, msg.severity, error))
+      process.stdout.write('\n')
+      cb(null)
+    } catch (e) {
+      process.stdout.write(chunk)
+      process.stdout.write('\n')
+      cb(null)
+    }
   }
 }
 
